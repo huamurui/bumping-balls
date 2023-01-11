@@ -1,0 +1,48 @@
+@media only screen and (max-width: 480px) {
+  #dimensions {
+    margin: 50px auto 0;
+    width: 200px;
+    height: 133px;
+  }
+}
+
+@media only screen and (min-width: 481px) and (max-width: 630px) {
+  #dimensions {
+    margin: 50px auto 0;
+    width: 400px;
+    height: 266px;
+  }
+}
+
+/* // 哈哈...你在这里 */
+/* 可是...如果要做多端，肯定不能这么写啊... 需要有一个统一的大小，然后，是显示问题....虽然死代码和魔法数字很傻逼...但，...只能，选一个了*/
+/* 好像也没有影响？怎么做到的？！ */
+@media only screen and (min-width: 631px) and (max-width: 1500px) {
+  #dimensions {
+    margin: 75px auto 0;
+    width: 600px;
+    height: 399px;
+  }
+}
+
+@media only screen and (min-width: 1501px) {
+  #dimensions {
+    margin: 100px auto 0;
+    width: 900px;
+    height: 600px;
+  }
+}
+
+#canvas:active {
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+#simulation {
+  display: none;
+}
+
+#choices,
+#simulation {
+  text-align: center;
+}
