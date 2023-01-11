@@ -16,9 +16,10 @@
         </div>
     </div>
 
-    <script src="js/vector2d.js"></script>
-    <script src="js/balls.js"></script>
-    <script src="js/bouncing-balls.js"></script>
+    <script  type="module" >
+      import BouncingBalls from './js/bouncing-balls.js';
+      window.onload = BouncingBalls.init('canvas', 'dimensions',true, true)
+    </script>
 </body>
 
 </html>

@@ -1,6 +1,3 @@
-(function(){
-    'use strict';
-
     /*********************************************************
         Notes about the physics in the simulations:
         The balls are equally hard (and have equal weight), so they don't lose energy when bouncing between themself.
@@ -168,7 +165,5 @@
         HorizontalBall: HorizontalBall,
     };
 
-    window.Balls = Balls;
+    export default Balls;
 
-
-}());
