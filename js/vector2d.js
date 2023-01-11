@@ -121,26 +121,9 @@
 
     Vector2D.NEAR_ZERO = 0.01; // a small value used to detect stationary balls (non eye-catchable moving)
 
-    // Establish the root object, `window` (`self`) in the browser, `global`
-    // on the server, or `this` in some virtual machines.
-    var root = typeof self == 'object' && self.self === self && self ||
-            typeof global == 'object' && global.global === global && global ||
-            this || {};
-
-    // Export the Vector2D object for **Node.js**, with
-    // backwards-compatibility for their old module API. If we're in
-    // the browser, add Vector2D as a global object.
-    // (`nodeType` is checked to ensure that `module`
-    // and `exports` are not HTML elements.)
 
     // 我在想...lodash里面有没有向量处理的函数
-    if (typeof exports != 'undefined' && !exports.nodeType) {
-        if (typeof module != 'undefined' && !module.nodeType && module.exports) {
-            exports = module.exports = Vector2D;
-        }
-        exports.Vector2D = Vector2D;
-    } else {
-        root.Vector2D = Vector2D;
-    }
+
+    window.Vector2D = Vector2D;
 
 }());

@@ -8,10 +8,6 @@
         The ball also loses energy from the air resistence, hitting the ground, rolling on the ground and gravity in the vertical simulation
         (but not from spinning and some other 3d things possible in billiard and basketball).
 
-        Known issue:
-        In "vertical" space/direction when the bottom is full with balls (when there is no space for a new ball)
-        adding a new ball will make all balls go crazy (jumping randomly). This is because the balls will always
-        collide and won't lose energy from colliding (I'm not sure how to solve this).
     *********************************************************/
 
     /**************
@@ -170,27 +166,9 @@
     /* Save these classes as global */
     var Balls = {
         HorizontalBall: HorizontalBall,
-        // VerticalBall: VerticalBall
     };
 
-    // Establish the root object, `window` (`self`) in the browser, `global`
-    // on the server, or `this` in some virtual machines.
-    var root = typeof self == 'object' && self.self === self && self ||
-            typeof global == 'object' && global.global === global && global ||
-            this || {};
+    window.Balls = Balls;
 
-    // Export the Balls object for **Node.js**, with
-    // backwards-compatibility for their old module API. If we're in
-    // the browser, add Balls as a global object.
-    // (`nodeType` is checked to ensure that `module`
-    // and `exports` are not HTML elements.)
-    if (typeof exports != 'undefined' && !exports.nodeType) {
-        if (typeof module != 'undefined' && !module.nodeType && module.exports) {
-            exports = module.exports = Balls;
-        }
-        exports.Balls = Balls;
-    } else {
-        root.Balls = Balls;
-    }
 
 }());

@@ -230,10 +230,7 @@
     /******************
     ** MAIN FUNCTION **
     *******************/
-   //这里会报错 第零个还是没有定义
-    // var driver = balls[0].velocity
-    // driver.X = 10
-    // driver.Y = 0
+
     function update() {
         // check dimensions and clear canvas
         // the canvas is cleared when a new value is attached to dimensions (no matter if a same value)
@@ -266,9 +263,6 @@
              balls[i].move();
         }
 
-        // 可这样每一帧都会..
-
-        // driver.Y = 0
         //你动画更新放这边简直就是......
         let jiasudu = 0.2
         if (up) { balls[0].velocity.Y -= jiasudu; }
@@ -309,7 +303,6 @@
         balls = [];
 
         // add a special ball at first place
-
         var theBall = new ballType(
           new Vector2D(0, 0),
           new Vector2D(0, 0),
@@ -318,62 +311,49 @@
         );
         balls.push(theBall);
 
-        // var driver = var也不管用
 
         document.addEventListener('keydown', function (event) {
-          switch (event.keyCode) {
-          // Throttle
-  
-          // 这些数字是键位吗...日。
-          case 38:
-          case 87:
-              up = true;
-              break;
-          // Break
-          case 40:
-          case 83:
-              down = true;
-              break;
-          // Turn left
-          case 37:
-          case 65:
-              left = true;
-              break;
-          // Turn right
-          case 39:
-          case 68:
-              right = true;
-              break;
-          }
-      });
-      
-
-
-      // Which key was releaed
-      document.addEventListener('keyup', function (event) {
-          switch (event.keyCode) {
-          // Throttle
-          case 38:
-          case 87:
-              up = false;
-              break;
-          // Break
-          case 40:
-          case 83:
-              down = false;
-              break;
-          // Turn left
-          case 37:
-          case 65:
-              left = false;
-              break;
-          // Turn right
-          case 39:
-          case 68:
-              right = false;
-              break;
-          }
-      });
+            switch (event.keyCode) {
+              case 38:
+              case 87:
+                  up = true;
+                  break;
+              case 40:
+              case 83:
+                  down = true;
+                  break;
+              case 37:
+              case 65:
+                  left = true;
+                  break;
+              case 39:
+              case 68:
+                  right = true;
+                  break;
+              }
+        });
+        
+        // Which key was releaed
+        document.addEventListener('keyup', function (event) {
+            switch (event.keyCode) {
+            case 38:
+            case 87:
+                up = false;
+                break;
+            case 40:
+            case 83:
+                down = false;
+                break;
+            case 37:
+            case 65:
+                left = false;
+                break;
+            case 39:
+            case 68:
+                right = false;
+                break;
+            }
+        });
 
 
         // add mouse event listeners
