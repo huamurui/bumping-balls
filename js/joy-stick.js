@@ -5,12 +5,12 @@ let StickStatus ={
 
 /**
  * @desc Principal object that draw a joystick, you only need to initialize the object and suggest the HTML container
- * @costructor
+ * @constructor
  * @param container {String} - HTML object that contains the Joystick
  * @param parameters (optional) - object with following keys:
  *  title {String} (optional) - The ID of canvas (Default value is 'joystick')
- *  width {Int} (optional) - The width of canvas, if not specified is setted at width of container object (Default value is the width of container object)
- *  height {Int} (optional) - The height of canvas, if not specified is setted at height of container object (Default value is the height of container object)
+ *  width {Int} (optional) - The width of canvas, if not specified is set at width of container object (Default value is the width of container object)
+ *  height {Int} (optional) - The height of canvas, if not specified is set at height of container object (Default value is the height of container object)
  *  internalFillColor {String} (optional) - Internal color of Stick (Default value is '#00AA00')
  *  internalLineWidth {Int} (optional) - Border width of Stick (Default value is 2)
  *  internalStrokeColor {String}(optional) - Border color of Stick (Default value is '#003300')
@@ -24,13 +24,17 @@ function JoyStick(container, parameters, callback){
     var title = (typeof parameters.title === "undefined" ? "joystick" : parameters.title),
         width = (typeof parameters.width === "undefined" ? 0 : parameters.width),
         height = (typeof parameters.height === "undefined" ? 0 : parameters.height),
-        internalFillColor = (typeof parameters.internalFillColor === "undefined" ? "#00AA00" : parameters.internalFillColor),
+
+        internalFillColor = (typeof parameters.internalFillColor === "undefined" ? "#00ffff" : parameters.internalFillColor),
         internalLineWidth = (typeof parameters.internalLineWidth === "undefined" ? 2 : parameters.internalLineWidth),
         internalStrokeColor = (typeof parameters.internalStrokeColor === "undefined" ? "#003300" : parameters.internalStrokeColor),
+        
         externalLineWidth = (typeof parameters.externalLineWidth === "undefined" ? 2 : parameters.externalLineWidth),
         externalStrokeColor = (typeof parameters.externalStrokeColor ===  "undefined" ? "#008000" : parameters.externalStrokeColor),
+        
         autoReturnToCenter = (typeof parameters.autoReturnToCenter === "undefined" ? true : parameters.autoReturnToCenter);
 
+    // 这个函数是...也许是想把一部分东西交出去，给外界一个操作口，但，目前是没有这个需求..
     callback = callback || function(StickStatus) {};
 
     // Create Canvas element and add it in the Container object
@@ -51,26 +55,23 @@ function JoyStick(container, parameters, callback){
     var pressed = 0; // Bool - 1=Yes - 0=No
     var circumference = 2 * Math.PI;
     var internalRadius = (canvas.width-((canvas.width/2)+10))/2;
+    // 你可真是...写了一堆魔法数字是吧。。
     var maxMoveStick = internalRadius + 5;
     var externalRadius = internalRadius + 30;
     var centerX = canvas.width / 2;
     var centerY = canvas.height / 2;
-    var directionHorizontalLimitPos = canvas.width / 10;
-    var directionHorizontalLimitNeg = directionHorizontalLimitPos * -1;
-    var directionVerticalLimitPos = canvas.height / 10;
-    var directionVerticalLimitNeg = directionVerticalLimitPos * -1;
     // Used to save current position of stick
     var movedX=centerX;
     var movedY=centerY;
 
     // just add the EventListener
-    canvas.addEventListener("touchstart", onTouchStart, false);
-    document.addEventListener("touchmove", onTouchMove, false);
-    document.addEventListener("touchend", onTouchEnd, false);
+    canvas.addEventListener("touchstart", onTouchStart);
+    document.addEventListener("touchmove", onTouchMove);
+    document.addEventListener("touchend", onTouchEnd);
 
-    canvas.addEventListener("mousedown", onMouseDown, false);
-    document.addEventListener("mousemove", onMouseMove, false);
-    document.addEventListener("mouseup", onMouseUp, false);
+    canvas.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
     
     // Draw the object
     drawExternal();
@@ -96,10 +97,14 @@ function JoyStick(container, parameters, callback){
      */
     function drawInternal() {
         context.beginPath();
-        if(movedX<internalRadius) { movedX=maxMoveStick; }
-        if((movedX+internalRadius) > canvas.width) { movedX = canvas.width-(maxMoveStick); }
-        if(movedY<internalRadius) { movedY=maxMoveStick; }
-        if((movedY+internalRadius) > canvas.height) { movedY = canvas.height-(maxMoveStick); }
+
+
+        if((movedY - centerY) * (movedY - centerY) + (movedX - centerX) * (movedX - centerX) > (internalRadius * internalRadius)) {
+            var angle = Math.atan2((movedY - centerY),(movedX - centerX));
+            movedX = centerX + internalRadius * Math.cos(angle);
+            movedY = centerY + internalRadius * Math.sin(angle);
+        } 
+
         context.arc(movedX, movedY, internalRadius, 0, circumference, false);
         // create radial gradient
         var grd = context.createRadialGradient(centerX, centerY, 5, centerX, centerY, 200);
@@ -117,42 +122,48 @@ function JoyStick(container, parameters, callback){
     /**
      * @desc Events for manage touch
      */
-    function onTouchStart(event) {
+    function onTouchStart() {
         pressed = 1;
     }
-
+    // 哈...原来的代码是分开的，变量确实共用的。
+     
     function onTouchMove(event) {
-        if(pressed === 1 && event.targetTouches[0].target === canvas) {
-            movedX = event.targetTouches[0].pageX;
-            movedY = event.targetTouches[0].pageY;
-            // Manage offset
-            if(canvas.offsetParent.tagName.toUpperCase() === "BODY"){
-                movedX -= canvas.offsetLeft;
-                movedY -= canvas.offsetTop;
-            }
-            else {
-                movedX -= canvas.offsetParent.offsetLeft;
-                movedY -= canvas.offsetParent.offsetTop;
-            }
-            // Delete canvas
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            // Redraw object
-            drawExternal();
-            drawInternal();
+        if(pressed === 1) {
+          if ('touches' in event) {
+            // 我真tmd机智...但为什么在另一边直接用点语法就不会报错，而是执行？只是个 undefined 啊...为什么用 in 就...
+            movedX = event.touches[0].pageX;
+            movedY = event.touches[0].pageY;
+          }else{
+            movedX = event.pageX;
+            movedY = event.pageY;
+          }
+          // Manage offset 。。这地方很诡异...touch和mouse的offset不一样
+          if(canvas.offsetParent.tagName.toUpperCase() === "BODY"){
+              movedX -= canvas.offsetLeft;
+              movedY -= canvas.offsetTop;
+          }
+          else {
+              movedX -= canvas.offsetParent.offsetLeft;
+              movedY -= canvas.offsetParent.offsetTop;
+          }
+          // Delete canvas
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          // Redraw object
+          drawExternal();
+          drawInternal();
 
             // Set attribute of callback
-            StickStatus.x = (100*((movedX - centerX)/maxMoveStick)).toFixed();
-            StickStatus.y = ((100*((movedY - centerY)/maxMoveStick))*-1).toFixed();
+            // StickStatus.x = (100*((movedX - centerX)/maxMoveStick)).toFixed();
+            // StickStatus.y = ((100*((movedY - centerY)/maxMoveStick))*-1).toFixed();
 
-            callback(StickStatus);
+            // callback(StickStatus);
         }
     } 
 
-    function onTouchEnd(event) {
+    function onTouchEnd() {
         pressed = 0;
         // If required reset position store variable
-        if(autoReturnToCenter)
-        {
+        if(autoReturnToCenter){
             movedX = centerX;
             movedY = centerY;
         }
@@ -163,64 +174,28 @@ function JoyStick(container, parameters, callback){
         drawInternal();
 
         // Set attribute of callback
-        StickStatus.x = (100*((movedX - centerX)/maxMoveStick)).toFixed();
-        StickStatus.y = ((100*((movedY - centerY)/maxMoveStick))*-1).toFixed();
+        // StickStatus.x = (100*((movedX - centerX)/maxMoveStick)).toFixed();
+        // StickStatus.y = ((100*((movedY - centerY)/maxMoveStick))*-1).toFixed();
 
-        callback(StickStatus);
+        // callback(StickStatus);
     }
 
     /**
      * @desc Events for manage mouse
      */
-    function onMouseDown(event) {
+    function onMouseDown() {
         pressed = 1;
     }
-
-    /* To simplify this code there was a new experimental feature here: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/offsetX , but it present only in Mouse case not metod presents in Touch case :-( */
+    
     function onMouseMove(event) {
         if(pressed === 1) {
-            movedX = event.pageX;
-            movedY = event.pageY;
-            // Manage offset
-            if(canvas.offsetParent.tagName.toUpperCase() === "BODY") {
-                movedX -= canvas.offsetLeft;
-                movedY -= canvas.offsetTop;
-            }
-            else {
-                movedX -= canvas.offsetParent.offsetLeft;
-                movedY -= canvas.offsetParent.offsetTop;
-            }
-            // Delete canvas
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            // Redraw object
-            drawExternal();
-            drawInternal();
-
-            // Set attribute of callback
-            StickStatus.x = (100*((movedX - centerX)/maxMoveStick)).toFixed();
-            StickStatus.y = ((100*((movedY - centerY)/maxMoveStick))*-1).toFixed();
-
-            callback(StickStatus);
+          onTouchMove(event);
         }
     }
 
     function onMouseUp(event) {
         pressed = 0;
-        // If required reset position store variable
-        if(autoReturnToCenter) {
-            movedX = centerX;
-            movedY = centerY;
-        }
-        // Delete canvas
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        // Redraw object
-        drawExternal();
-        drawInternal();
-
-        // Set attribute of callback
-        StickStatus.x = (100*((movedX - centerX)/maxMoveStick)).toFixed();
-        StickStatus.y = ((100*((movedY - centerY)/maxMoveStick))*-1).toFixed();
-        callback(StickStatus);
+        onTouchEnd(event);
     }
 
 
@@ -229,34 +204,12 @@ function JoyStick(container, parameters, callback){
      *****************************************************/
 
     /**
-     * @desc The width of canvas
-     * @return Number of pixel width 
-     */
-    this.GetWidth = function ()  {
-        return canvas.width;
-    };
-
-    /**
-     * @desc The height of canvas
-     * @return Number of pixel height
-     */
-    this.GetHeight = function ()  {
-        return canvas.height;
-    };
-
-
-    /**
-     * @desc Normalizzed value of X move of stick
+     * @desc Normalized value of X/Y move of stick
      * @return Integer from -100 to +100
      */
     this.GetX = function () {
         return (100*((movedX - centerX)/maxMoveStick)).toFixed();
     };
-
-    /**
-     * @desc Normalizzed value of Y move of stick
-     * @return Integer from -100 to +100
-     */
     this.GetY = function () {
         return ((100*((movedY - centerY)/maxMoveStick))*-1).toFixed();
     };

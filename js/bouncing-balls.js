@@ -34,7 +34,7 @@ var theBallProperties = {
   // 碰撞体积变大了但渲染没变大...颜色也不对...可见，又是被抛弃的代码
   startAngle: 0,
   endAngle: 2 * Math.PI,
-  color: '#ff0000'
+  color: '#00ffff'
 };
 var aimProperties = {
     shrink: 0.6,
@@ -45,7 +45,7 @@ var aimProperties = {
 };
 
 /******************************************************************************************
-** PROPERTIES USED FOR COMUNICATION BETWEEN HELPERS, EVENTS, UPDATE AND PUBLIC FUNCTIONS **
+** PROPERTIES USED FOR COMMUNICATION BETWEEN HELPERS, EVENTS, UPDATE AND PUBLIC FUNCTIONS **
 *******************************************************************************************/
 var updateInterval, canvas, context, canvasDimensions, isAiming, balls,
     ballType, enabledCollisions, mousePosition, newBallPosition, newBallDirection;
@@ -160,23 +160,24 @@ function drawAim(scaleRatio) {
 // 对，这个，也是我想要的功能所需要的..
 function onMouseMove(event) {
     if (isAiming) {
-        var eventDoc, doc, body;
+        // var eventDoc, doc, body;
         event = event || window.event; // IE-ism
 
+        // 兼容旧浏览器...怎么说呢...太多，历史因素了。。。
         // if pageX/Y aren't available and clientX/Y are, calculate pageX/Y - logic taken from jQuery.
         // (this is to support old IE)
-        if (event.pageX == null && event.clientX != null) {
-            eventDoc = (event.target && event.target.ownerDocument) || document;
-            doc = eventDoc.documentElement;
-            body = eventDoc.body;
+        // if (event.pageX == null && event.clientX != null) {
+        //     eventDoc = (event.target && event.target.ownerDocument) || document;
+        //     doc = eventDoc.documentElement;
+        //     body = eventDoc.body;
 
-            event.pageX = event.clientX +
-            (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
-            (doc && doc.clientLeft || body && body.clientLeft || 0);
-            event.pageY = event.clientY +
-            (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
-            (doc && doc.clientTop  || body && body.clientTop  || 0 );
-        }
+        //     event.pageX = event.clientX +
+        //     (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
+        //     (doc && doc.clientLeft || body && body.clientLeft || 0);
+        //     event.pageY = event.clientY +
+        //     (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
+        //     (doc && doc.clientTop  || body && body.clientTop  || 0 );
+        // }
 
         // convert mouse coordinates to local coordinates
         var dimensions = getCanvasDimensions();
@@ -369,13 +370,6 @@ function init(canvasId, dimensionsId, horizontal, collisions) {
         }
     });
 
-
-
-
-
-
-    // 它把这些都占用了就很烦哎...我的拖拽方向盘...那看来..只能，之后大改了。...？我能不能在这些函数里做手脚...
-    // 好吧，只是移动占用了整个文档...但这个也是我们可以使用的？
     // add mouse event listeners
     canvas.addEventListener('mouseup', onMouseUp);
     document.addEventListener('mousemove', onMouseMove);
@@ -385,6 +379,7 @@ function init(canvasId, dimensionsId, horizontal, collisions) {
     canvas.addEventListener('touchstart', onTouchStart);
     document.addEventListener('touchmove', onTouchMove);
     canvas.addEventListener('touchend', onTouchEnd);
+    // 我真的...佩服。怪不得说工业代码一大堆都在处理边界和特殊情况...
 
     // set interval
     updateInterval = setInterval(update, intervalMs);
