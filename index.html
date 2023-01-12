@@ -20,29 +20,9 @@
     <!-- Example of FIXED or ABSOLUTE position -->
 		<div id="joy3Div" style="width:200px;height:200px;margin:50px;position:fixed;bottom:0px;right:0px;"></div>
       <div style="position:fixed;bottom:125px;left:750px;">
-        <!-- Direzione:<input id="joy3Direzione" type="text" /><br />
-        X :<input id="joy3X" type="text" /></br>
-        Y :<input id="joy3Y" type="text" /> -->
-        <!-- 也是够拼...用input实现数据绑定.. -->
+
       </div>
     </div>
-
-    <script type="module">
-      import myStick from './js/joy-stick.js';
-
-      var joy3Param = { "title": "joystick3" };
-      var Joy3 = new myStick('joy3Div', joy3Param);
-
-      // var joy3IinputPosX = document.getElementById("joy3PosizioneX");
-      // var joy3InputPosY = document.getElementById("joy3PosizioneY");
-      // var joy3Direzione = document.getElementById("joy3Direzione");
-      // var joy3X = document.getElementById("joy3X");
-      // var joy3Y = document.getElementById("joy3Y");
-
-
-      setInterval(Joy3.GetX(), 50);
-      setInterval(Joy3.GetY(), 50);
-    </script>
 
     <script  type="module" >
       import BouncingBalls from './js/bouncing-balls.js';

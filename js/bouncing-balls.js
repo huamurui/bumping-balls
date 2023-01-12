@@ -1,6 +1,9 @@
 import  Vector2D  from './vector2d.js';
 import  Balls  from './balls.js';
 
+import myStick from './joy-stick.js';
+
+
 /**************
 ** CONSTANTS **
 ***************/
@@ -10,6 +13,9 @@ let up = false;
 let down = false;
 let left = false;
 let right = false;
+
+var joy3Param = { "title": "joystick3" };
+var Joy3 = new myStick('joy3Div', joy3Param);
 
 var fps = 60; // Note: if you change this, you'll need to addapt gravity and resistance logic in ball.js
 var intervalMs = 1000 / fps;
@@ -272,6 +278,12 @@ function update() {
     if (left) { balls[0].velocity.X -= jiasudu; }
     if (right) { balls[0].velocity.X += jiasudu; }
 
+    let accX = Joy3.GetX() *0.002
+    let accY = Joy3.GetY() *0.002
+    balls[0].velocity.X += accX
+    balls[0].velocity.Y -= accY
+    
+
 
     // draw updated balls
     for (var i=0; i<balls.length; i++)
@@ -356,6 +368,10 @@ function init(canvasId, dimensionsId, horizontal, collisions) {
             break;
         }
     });
+
+
+
+
 
 
     // 它把这些都占用了就很烦哎...我的拖拽方向盘...那看来..只能，之后大改了。...？我能不能在这些函数里做手脚...
