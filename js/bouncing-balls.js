@@ -150,6 +150,8 @@ function drawAim(scaleRatio) {
 /********************
 ** EVENT LISTENERS **
 *********************/
+
+// 对，这个，也是我想要的功能所需要的..
 function onMouseMove(event) {
     if (isAiming) {
         var eventDoc, doc, body;
@@ -356,6 +358,8 @@ function init(canvasId, dimensionsId, horizontal, collisions) {
     });
 
 
+    // 它把这些都占用了就很烦哎...我的拖拽方向盘...那看来..只能，之后大改了。...？我能不能在这些函数里做手脚...
+    // 好吧，只是移动占用了整个文档...但这个也是我们可以使用的？
     // add mouse event listeners
     canvas.addEventListener('mouseup', onMouseUp);
     document.addEventListener('mousemove', onMouseMove);
@@ -366,7 +370,6 @@ function init(canvasId, dimensionsId, horizontal, collisions) {
     document.addEventListener('touchmove', onTouchMove);
     canvas.addEventListener('touchend', onTouchEnd);
 
-    // ...竟然真用这个做动画...日。
     // set interval
     updateInterval = setInterval(update, intervalMs);
 }
@@ -389,12 +392,10 @@ function init(canvasId, dimensionsId, horizontal, collisions) {
 //     canvas.width = canvas.height = 0;
 // }
 
-/* Save these functions as global, no need from looking for the root because this script must run in browser */
+
 let BouncingBalls = {
     init: init,
     // clear: clear
 };
 
-// BouncingBalls.init();
-// window.BouncingBalls = BouncingBalls;
 export default BouncingBalls;
