@@ -8,7 +8,6 @@
 
 <body>
   
-    <div>use mouse click and drag to create little balls, and use ASWD or ↑↓←→ to move the cyan ball</div>
     <div id="simulation" style="display:block">
         <!-- Only these 2 elements are used in the simulation "dimensions" and "canvas" -->
         <div id="dimensions">
@@ -18,7 +17,7 @@
 
   
     <!-- Example of FIXED or ABSOLUTE position -->
-		<div id="joy3Div" style="width:200px;height:200px;margin:50px;position:fixed;bottom:0px;right:0px;"></div>
+		<div id="joy3Div" style="width:150px;height:150px;margin:50px;position:fixed;bottom:0px;right:0px;"></div>
       <div style="position:fixed;bottom:125px;left:750px;">
 
       </div>
@@ -26,7 +25,9 @@
 
     <script  type="module" >
       import BouncingBalls from './js/bouncing-balls.js';
-      window.onload = BouncingBalls.init('canvas', 'dimensions',true, true)
+      
+      
+      window.onload = BouncingBalls.init('canvas', 'dimensions',true)
     </script>
 </body>
 

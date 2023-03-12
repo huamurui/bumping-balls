@@ -1,24 +1,3 @@
-let StickStatus ={
-    x: 0,
-    y: 0,
-};
-
-/**
- * @desc Principal object that draw a joystick, you only need to initialize the object and suggest the HTML container
- * @constructor
- * @param container {String} - HTML object that contains the Joystick
- * @param parameters (optional) - object with following keys:
- *  title {String} (optional) - The ID of canvas (Default value is 'joystick')
- *  width {Int} (optional) - The width of canvas, if not specified is set at width of container object (Default value is the width of container object)
- *  height {Int} (optional) - The height of canvas, if not specified is set at height of container object (Default value is the height of container object)
- *  internalFillColor {String} (optional) - Internal color of Stick (Default value is '#00AA00')
- *  internalLineWidth {Int} (optional) - Border width of Stick (Default value is 2)
- *  internalStrokeColor {String}(optional) - Border color of Stick (Default value is '#003300')
- *  externalLineWidth {Int} (optional) - External reference circonference width (Default value is 2)
- *  externalStrokeColor {String} (optional) - External reference circonference color (Default value is '#008000')
- *  autoReturnToCenter {Bool} (optional) - Sets the behavior of the stick, whether or not, it should return to zero position when released (Default value is True and return to zero)
- * @param callback {StickStatus} - 
- */
 function JoyStick(container, parameters, callback){
     parameters = parameters || {};
     var title = (typeof parameters.title === "undefined" ? "joystick" : parameters.title),

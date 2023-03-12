@@ -1,54 +1,42 @@
-import  Vector2D  from './vector2d.js';
-import  Balls  from './balls.js';
+import Vector2D from './vector2d.js'
+import Balls from './balls.js'
 
-import myStick from './joy-stick.js';
+import render from './render-to-screen.js'
+import myStick from './joy-stick.js'
 
 
 /**************
 ** CONSTANTS **
 ***************/
+var joy3Param = { 
+  "title": "joystick3",
+  "internalFillColor": "#00ffff",
+  // 目前这个joy stick 还有个问题..主要在移动端，横屏的时候，它全乱套了。
+  // "internalStrokeColor": "#000000",
+  // "externalStrokeColor": "#000000",
+}
+var Joy3 = new myStick('joy3Div', joy3Param)
 
-// 全局变量真的是个很愚蠢的操作...
-let up = false;
-let down = false;
-let left = false;
-let right = false;
-
-var joy3Param = { "title": "joystick3" };
-var Joy3 = new myStick('joy3Div', joy3Param);
-
-var fps = 60; // Note: if you change this, you'll need to addapt gravity and resistance logic in ball.js
-var intervalMs = 1000 / fps;
+var fps = 60 // Note: if you change this, you'll need to addapt gravity and resistance logic in ball.js
+var intervalMs = 1000 / fps
 var localDimensions = {
     width: 100, // 1 localDimensions.width is 1 local unit
     height: 100 * (2/3) // the canvas ratio is always 3:2
-};
-var ballProperties = {
-    radius: 1, // local units
-    startAngle: 0,
-    endAngle: 2 * Math.PI,
-    color: '#000000'
-};
+}
+
+// 按理说... 这里主要是给渲染用的，但是，碰撞检测好像也用到了...所以很烦。
 var theBallProperties = {
   radius: 3, // local units
-  // 碰撞体积变大了但渲染没变大...颜色也不对...可见，又是被抛弃的代码
   startAngle: 0,
   endAngle: 2 * Math.PI,
   color: '#00ffff'
-};
-var aimProperties = {
-    shrink: 0.6,
-    maxSpeed: 30, // local units
-    headPart: 0.2,
-    strokeAngle: Math.PI / 5,
-    color: '#000000'
-};
+}
 
 /******************************************************************************************
 ** PROPERTIES USED FOR COMMUNICATION BETWEEN HELPERS, EVENTS, UPDATE AND PUBLIC FUNCTIONS **
 *******************************************************************************************/
-var updateInterval, canvas, context, canvasDimensions, isAiming, balls,
-    ballType, enabledCollisions, mousePosition, newBallPosition, newBallDirection;
+var updateInterval, canvas, context, canvasDimensions, balls,
+    ballType, enabledCollisions
 
 /************
 ** HELPERS **
@@ -65,348 +53,103 @@ function getCanvasDimensions() {
     }
 }
 
-function addNewBall() {
-    isAiming = false;
-
-    // save the new ball
-    var newBall = new ballType(
-        newBallPosition.clone(),
-        newBallDirection.clone(),
-        ballProperties.radius,
-        localDimensions
-    );
-    balls.push(newBall);
-
-    // reset values
-    newBallDirection = Vector2D.zero();
-    newBallPosition = new Vector2D();
-}
-
-/************
-** DRAWING **
-*************/
-function drawCanvasBorder(dimensions) {
-    context.strokeStyle = '#000000';
-    context.strokeRect(0, 0, dimensions.width, dimensions.height);
-}
-
-function drawBall(ballCoords, scaleRatio) {
-    var scaledCoords = ballCoords.mult(scaleRatio); // convert the coordinates in CANVAS size
-
-    context.beginPath();
-    context.arc(scaledCoords.X, scaledCoords.Y, ballProperties.radius * scaleRatio, // convert the radius too
-        ballProperties.startAngle, ballProperties.endAngle);
-    context.closePath();
-
-    context.fillStyle = ballProperties.color;
-
-    // 好吧...是所有的一块定义了，在一个抽象对象上定义...而不是具体的balls。
-    context.fill();
-}
-
-function drawTheBall(ballCoords, scaleRatio){
-  var scaledCoords = ballCoords.mult(scaleRatio); // convert the coordinates in CANVAS size
-
-  context.beginPath();
-  context.arc(scaledCoords.X, scaledCoords.Y, theBallProperties.radius * scaleRatio, // convert the radius too
-      ballProperties.startAngle, ballProperties.endAngle);
-  context.closePath();
-
-  context.fillStyle = theBallProperties.color;
-
-  // 好吧...是所有的一块定义了，在一个抽象对象上定义...而不是具体的balls。
-  context.fill();
-}
-
-function drawAim(scaleRatio) {
-    if (newBallDirection.isNearZero())
-        return; // no direction, the mouse is in the start position
-
-    var directionLength = newBallDirection.length();
-    var radiusRatio = ballProperties.radius / directionLength;
-    var scaledShrink = aimProperties.shrink * scaleRatio;
-
-    // convert start and end points in CANVAS coordinates (using scaleRatio)
-    // move the start point on the ball border (using the ball direction)
-    // and adjust end point (using the start point)
-    var startPoint = newBallPosition.add(newBallDirection.mult(radiusRatio)).mult(scaleRatio);
-    var endPoint = startPoint.add(newBallDirection.mult(scaledShrink));
-
-    // calculate head strokes angle
-    var headLength = directionLength * scaledShrink * aimProperties.headPart;
-    var arrowAngle = newBallDirection.angle(); // angle between Y axis and the arrow direction
-    var leftStrokeAngle = arrowAngle - aimProperties.strokeAngle;
-    var rightStrokeAngle = arrowAngle + aimProperties.strokeAngle;
-
-    context.beginPath();
-    // draw the body
-    context.moveTo(startPoint.X, startPoint.Y);
-    context.lineTo(endPoint.X, endPoint.Y);
-    // draw the head strokes
-    context.lineTo(endPoint.X - headLength * Math.sin(leftStrokeAngle),
-                    endPoint.Y - headLength * Math.cos(leftStrokeAngle));
-    context.moveTo(endPoint.X, endPoint.Y);
-    context.lineTo(endPoint.X - headLength * Math.sin(rightStrokeAngle),
-                    endPoint.Y - headLength * Math.cos(rightStrokeAngle));
-
-    context.strokeStyle = aimProperties.color;
-    context.stroke();
-}
-
-/********************
-** EVENT LISTENERS **
-*********************/
-
-// 对，这个，也是我想要的功能所需要的..
-function onMouseMove(event) {
-    if (isAiming) {
-        // var eventDoc, doc, body;
-        event = event || window.event; // IE-ism
-
-        // 兼容旧浏览器...怎么说呢...太多，历史因素了。。。
-        // if pageX/Y aren't available and clientX/Y are, calculate pageX/Y - logic taken from jQuery.
-        // (this is to support old IE)
-        // if (event.pageX == null && event.clientX != null) {
-        //     eventDoc = (event.target && event.target.ownerDocument) || document;
-        //     doc = eventDoc.documentElement;
-        //     body = eventDoc.body;
-
-        //     event.pageX = event.clientX +
-        //     (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
-        //     (doc && doc.clientLeft || body && body.clientLeft || 0);
-        //     event.pageY = event.clientY +
-        //     (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
-        //     (doc && doc.clientTop  || body && body.clientTop  || 0 );
-        // }
-
-        // convert mouse coordinates to local coordinates
-        var dimensions = getCanvasDimensions();
-        mousePosition = new Vector2D(event.pageX, event.pageY).convertToLocal(dimensions);
-        if (newBallPosition.isUndefined())
-            newBallPosition = mousePosition.clone(); // start aiming
-
-        // check where the pointer is located
-        if (mousePosition.X <= 0 || mousePosition.X >= localDimensions.width
-            || mousePosition.Y <= 0 || mousePosition.Y >= localDimensions.height) {
-            addNewBall();
-        } else {
-            // calculate aim direction
-            newBallDirection = mousePosition.direction(newBallPosition);
-
-            // directionLength shoud be smaller or equal to aimProperties.maxSpeed
-            var directionLength = newBallDirection.length();
-            if (directionLength > aimProperties.maxSpeed)
-                newBallDirection = newBallDirection.mult(aimProperties.maxSpeed / directionLength);
-        }
-    }
-}
-
-function onMouseDown(event) {
-    // button=0 is left mouse click, button=1 is middle mouse click, button=2 is right mouse click
-    if (event.button == 0) {
-        isAiming = true;
-        onMouseMove(event); // calculate the start position
-    } else if (isAiming) {
-        addNewBall();
-    }
-}
-
-function onMouseUp() {
-    if (isAiming)
-        addNewBall();
-}
-
-function onTouchMove(event) {
-    // isAiming will be true ONLY if 1 finger touches the screen
-    onMouseMove(event.touches[0]);
-}
-
-function onTouchStart(event) {
-    if (event.touches.length == 1) {
-        event.touches[0].button = 0; // imitate a left mouse button click
-        onMouseDown(event.touches[0]);
-    } else {
-        onMouseUp();
-    }
-    event.preventDefault();
-}
-
-function onTouchEnd() {
-    onMouseUp();
-    event.preventDefault();
-}
 
 /******************
 ** MAIN FUNCTION **
 *******************/
 
-function update() {
-    // check dimensions and clear canvas
-    // the canvas is cleared when a new value is attached to dimensions (no matter if a same value)
-    var dimensions = getCanvasDimensions();
-    canvas.width = dimensions.width;
-    canvas.height = dimensions.height;
+function getCanvasSize(dimensions) {
+  canvas.width = dimensions.width
+  canvas.height = dimensions.height
+}
+function update (){
+    // 如果要分离，这里可能需要接收一群 ball 的参数，并且更改时也不再是直接更改，而是，发消息。...所以函数式真的会好一点。救大命。
 
-    // draw canvas border
-    // and clear the canvas！！！
-    drawCanvasBorder(dimensions);
 
-    // aiming mode
-    if (isAiming) {
-        // draw new ball
-        drawBall(newBallPosition, dimensions.scaleRatio);
-        // draw aim
-        drawAim(dimensions.scaleRatio);
-    }
+    let dimensions = getCanvasDimensions(canvasDimensions)
+    getCanvasSize(dimensions) 
+
+    // 嗯...看变量的情况，碰撞什么的都出来了，但是，图像上什么都没有...这意味着...更新太快被覆盖了？
 
     if (enabledCollisions){
         // check collisions and update positions & velocities
-        // O(N^2) but this can be much faster, O(N*LogN) searching in quadtree structure, (or sort the points and check the closest O(N*LogN))
-        for (var i=0; i<balls.length; i++)
-            for (var j=i+1; j<balls.length; j++)
-                balls[i].collision(balls[j]);
+        // O(N^2) but this can be much faster, O(N*LogN) searching in quadtree structure, (or sort the points and check the closest O(N*LogN))        
+        for (var i=0 ;i<balls.length; i++)
+            for (var j=i+1; j<balls.length ;j++)
+                balls[i].collision(balls[j])          
     }
+
+    // https://juejin.cn/post/6844904159938887687
+
     // update ball position & velocity
-    for (var i=0; i<balls.length; i++)
-    {
-          balls[i].move();
-    }
+    balls.forEach((ball) => {
+      ball.move()
+    })
 
-    //你动画更新放这边简直就是......
-    let jiasudu = 0.2
-    if (up) { balls[0].velocity.Y -= jiasudu; }
-    if (down) { balls[0].velocity.Y += jiasudu; }
-    if (left) { balls[0].velocity.X -= jiasudu; }
-    if (right) { balls[0].velocity.X += jiasudu; }
-
+    // 当初你为了方便，把用了同一个计时器...这里用户输入... 要emit...可能也差不多。
     let accX = Joy3.GetX() *0.002
     let accY = Joy3.GetY() *0.002
     balls[0].velocity.X += accX
     balls[0].velocity.Y -= accY
     
-
-
-    // draw updated balls
-    for (var i=0; i<balls.length; i++)
-    {  if(i==0){
-        //..这判断太蠢了，而且你这代码写的到处都是
-        drawTheBall(balls[i].position, dimensions.scaleRatio);
-      }else{
-        drawBall(balls[i].position, dimensions.scaleRatio);
-      }
-    }
+    render(context, balls, canvas, dimensions, theBallProperties)
 }
 
 /*********************
 ** PUBLIC FUNCTIONS **
 **********************/
-function init(canvasId, dimensionsId, horizontal, collisions) {
-    // default values
-    horizontal = (typeof horizontal != 'boolean') ? true : horizontal;
-    enabledCollisions = (typeof collisions != 'boolean') ? true : collisions;
+function getDom (canvasId,dimensionsId) {
+  canvas =  document.getElementById(canvasId)
+  context = canvas.getContext('2d')
+  canvasDimensions = document.getElementById(dimensionsId)
+}
 
-    // init parameters
-    canvas =  document.getElementById(canvasId);
-    context = canvas.getContext('2d');
-    canvasDimensions = document.getElementById(dimensionsId);
-    isAiming = false;
-    mousePosition = new Vector2D(); // X & Y should be represented with local coordinates
-    newBallPosition = new Vector2D(); // X & Y should be represented with local coordinates
-    newBallDirection = Vector2D.zero();
+function init(canvasId, dimensionsId, collisions) {
+    // default values
+    enabledCollisions = (typeof collisions != 'boolean') ? true : collisions
+
+    // // init parameters
+    getDom (canvasId,dimensionsId)
+
     ballType = Balls.HorizontalBall 
     //好吧。。。初始化函数也在这里...balls就是维护ball的数组。如果要做多端...持久化储存...下线了怎么办...
-    balls = [];
+    balls = []
 
     // add a special ball at first place
     var theBall = new ballType(
       new Vector2D(0, 0),
       new Vector2D(0, 0),
+      // 对的...碰撞检测的时候，是用的这个radius...但是也只用到了这个而已... 这里如果能要交给用户去定义那最好，选择位置和大小，最下边的是什么...
       theBallProperties.radius,
       localDimensions
-    );
-    balls.push(theBall);
+    )
+    balls.push(theBall)
 
-
-    document.addEventListener('keydown', function (event) {
-        switch (event.keyCode) {
-          case 38:
-          case 87:
-              up = true;
-              break;
-          case 40:
-          case 83:
-              down = true;
-              break;
-          case 37:
-          case 65:
-              left = true;
-              break;
-          case 39:
-          case 68:
-              right = true;
-              break;
-          }
-    });
-    
-    // Which key was releaed
-    document.addEventListener('keyup', function (event) {
-        switch (event.keyCode) {
-        case 38:
-        case 87:
-            up = false;
-            break;
-        case 40:
-        case 83:
-            down = false;
-            break;
-        case 37:
-        case 65:
-            left = false;
-            break;
-        case 39:
-        case 68:
-            right = false;
-            break;
-        }
-    });
-
-    // add mouse event listeners
-    canvas.addEventListener('mouseup', onMouseUp);
-    document.addEventListener('mousemove', onMouseMove);
-    canvas.addEventListener('mousedown', onMouseDown);
-
-    // add touch event listeners
-    canvas.addEventListener('touchstart', onTouchStart);
-    document.addEventListener('touchmove', onTouchMove);
-    canvas.addEventListener('touchend', onTouchEnd);
-    // 我真的...佩服。怪不得说工业代码一大堆都在处理边界和特殊情况...
+    var theBall2 = new ballType(
+      new Vector2D(10, 10),
+      new Vector2D(10, 10),
+      theBallProperties.radius,
+      localDimensions
+    )
+    balls.push(theBall2)
 
     // set interval
-    updateInterval = setInterval(update, intervalMs);
+    updateInterval = setInterval(update, intervalMs)
 }
 
 // function clear() {
-//     // remove mouse event listeners
-//     canvas.removeEventListener('mousedown', onMouseDown);
-//     document.removeEventListener('mousemove', onMouseMove);
-//     canvas.removeEventListener('mouseup', onMouseUp);
-
-//     // remove touch event listeners
-//     canvas.removeEventListener('touchstart', onTouchStart);
-//     document.removeEventListener('touchmove', onTouchMove);
-//     canvas.removeEventListener('touchend', onTouchEnd);
 
 //     // clear interval
-//     clearInterval(updateInterval);
+//     clearInterval(updateInterval)
 
 //     // clear canvas
-//     canvas.width = canvas.height = 0;
+//     canvas.width = canvas.height = 0
 // }
 
 
 let BouncingBalls = {
     init: init,
     // clear: clear
-};
+}
 
-export default BouncingBalls;
+export default BouncingBalls

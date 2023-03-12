@@ -17,7 +17,9 @@ function Ball(position, velocity, radius, localDimensions) {
     this.velocity = velocity;
     this.radius = radius;
     this._borderCoords = {
-      // this is for ...边界坐标
+      // this is for ...边界坐标？？？？
+      // 不是，什么意思，是每一个球，都有一个边界坐标？？？
+      // 艹! 我要麻了！
         top: radius,
         bottom: localDimensions.height - radius,
         left: radius,
