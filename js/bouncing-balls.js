@@ -17,7 +17,7 @@ var joy3Param = {
 }
 var Joy3 = new myStick('joy3Div', joy3Param)
 
-var fps = 60 // Note: if you change this, you'll need to addapt gravity and resistance logic in ball.js
+var fps = 60 // Note: if you change this, you'll need to adapt gravity and resistance logic in ball.js
 var intervalMs = 1000 / fps
 var localDimensions = {
     width: 100, // 1 localDimensions.width is 1 local unit
@@ -35,42 +35,13 @@ var theBallProperties = {
 /******************************************************************************************
 ** PROPERTIES USED FOR COMMUNICATION BETWEEN HELPERS, EVENTS, UPDATE AND PUBLIC FUNCTIONS **
 *******************************************************************************************/
-var updateInterval, canvas, context, canvasDimensions, balls,
-    ballType, enabledCollisions
-
-/************
-** HELPERS **
-*************/
-function getCanvasDimensions() {
-    return {
-        width: canvasDimensions.offsetWidth,
-        height: canvasDimensions.offsetHeight,
-        top: canvasDimensions.offsetTop,
-        left: canvasDimensions.offsetLeft,
-        scaleRatio: canvasDimensions.offsetWidth / localDimensions.width
-        // 嗯...放缩，不同屏幕上玩...如果要做多端适配，也是一个，不能少的地方
-        // 真实的数据如果是...localDimensions，那canvas上画的，只是一个，可以根据实际屏幕大小进行放缩的，一个虚拟的。虽然它是实际展示的，但是我们在代码中，操作的更多的会是 localDimensions
-    }
-}
+var updateInterval, balls, ballType, enabledCollisions
 
 
 /******************
 ** MAIN FUNCTION **
 *******************/
-
-function getCanvasSize(dimensions) {
-  canvas.width = dimensions.width
-  canvas.height = dimensions.height
-}
 function update (){
-    // 如果要分离，这里可能需要接收一群 ball 的参数，并且更改时也不再是直接更改，而是，发消息。...所以函数式真的会好一点。救大命。
-
-
-    let dimensions = getCanvasDimensions(canvasDimensions)
-    getCanvasSize(dimensions) 
-
-    // 嗯...看变量的情况，碰撞什么的都出来了，但是，图像上什么都没有...这意味着...更新太快被覆盖了？
-
     if (enabledCollisions){
         // check collisions and update positions & velocities
         // O(N^2) but this can be much faster, O(N*LogN) searching in quadtree structure, (or sort the points and check the closest O(N*LogN))        
@@ -87,29 +58,26 @@ function update (){
     })
 
     // 当初你为了方便，把用了同一个计时器...这里用户输入... 要emit...可能也差不多。
-    let accX = Joy3.GetX() *0.002
-    let accY = Joy3.GetY() *0.002
-    balls[0].velocity.X += accX
-    balls[0].velocity.Y -= accY
-    
-    render(context, balls, canvas, dimensions, theBallProperties)
+    // 调参，好玩~
+    let accX = Joy3.GetX() *0.001
+    let accY = Joy3.GetY() *0.001
+    let maxV = 1.5
+
+    if (balls[0].velocity.length() < maxV)
+    {
+      balls[0].velocity.X += accX
+      balls[0].velocity.Y -= accY
+    }
+    render(balls, theBallProperties)
 }
 
 /*********************
 ** PUBLIC FUNCTIONS **
 **********************/
-function getDom (canvasId,dimensionsId) {
-  canvas =  document.getElementById(canvasId)
-  context = canvas.getContext('2d')
-  canvasDimensions = document.getElementById(dimensionsId)
-}
 
 function init(canvasId, dimensionsId, collisions) {
     // default values
     enabledCollisions = (typeof collisions != 'boolean') ? true : collisions
-
-    // // init parameters
-    getDom (canvasId,dimensionsId)
 
     ballType = Balls.HorizontalBall 
     //好吧。。。初始化函数也在这里...balls就是维护ball的数组。如果要做多端...持久化储存...下线了怎么办...
@@ -137,19 +105,19 @@ function init(canvasId, dimensionsId, collisions) {
     updateInterval = setInterval(update, intervalMs)
 }
 
-// function clear() {
+function clear() {
 
-//     // clear interval
-//     clearInterval(updateInterval)
+    // clear interval
+    clearInterval(updateInterval)
 
-//     // clear canvas
-//     canvas.width = canvas.height = 0
-// }
+    // clear canvas
+    canvas.width = canvas.height = 0
+}
 
 
 let BouncingBalls = {
     init: init,
-    // clear: clear
+    clear: clear
 }
 
 export default BouncingBalls
