@@ -8,12 +8,14 @@ import myStick from './joy-stick.js'
 /**************
 ** CONSTANTS **
 ***************/
+let theColor = '#00ffff'
+
 var joy3Param = { 
-  "title": "joystick3",
-  "internalFillColor": "#00ffff",
+  title: "joystick3",
+  internalFillColor: theColor,
   // 目前这个joy stick 还有个问题..主要在移动端，横屏的时候，它全乱套了。
-  // "internalStrokeColor": "#000000",
-  // "externalStrokeColor": "#000000",
+  internalStrokeColor: "#00aaaa",
+  externalStrokeColor: theColor,
 }
 var Joy3 = new myStick('joy3Div', joy3Param)
 
@@ -29,7 +31,7 @@ var theBallProperties = {
   radius: 3, // local units
   startAngle: 0,
   endAngle: 2 * Math.PI,
-  color: '#00ffff'
+  color: theColor
 }
 
 /******************************************************************************************
