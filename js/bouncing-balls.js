@@ -1,23 +1,14 @@
 import Vector2D from './vector2d.js'
 import Balls from './balls.js'
 
-import render from './render-to-screen.js'
-import myStick from './joy-stick.js'
+import { render,Joy3 } from './render-to-screen.js'
+
 
 
 /**************
 ** CONSTANTS **
 ***************/
 let theColor = '#00ffff'
-
-var joy3Param = { 
-  title: "joystick3",
-  internalFillColor: theColor,
-  // 目前这个joy stick 还有个问题..主要在移动端，横屏的时候，它全乱套了。
-  internalStrokeColor: "#00aaaa",
-  externalStrokeColor: theColor,
-}
-var Joy3 = new myStick('joy3Div', joy3Param)
 
 var fps = 60 // Note: if you change this, you'll need to adapt gravity and resistance logic in ball.js
 var intervalMs = 1000 / fps
