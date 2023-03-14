@@ -1,12 +1,12 @@
   (function () {
-    var socket = io();
-    var canvas = document.getElementById('game');
-    var ctx = canvas.getContext('2d');
-    // var players = {}; // this is magically defined in game.js
+    var socket = io()
+    var canvas = document.getElementById('game')
+    var ctx = canvas.getContext('2d')
+    // var players = {} // this is magically defined in game.js
     // 虽说 websocket 是对称的...但这样看，估计，啊...不知道怎么讲了。
 
     // 这里，可以看到，是后端调用的整个前端更新。
-    socket.on('gameStateUpdate', updateGameState);
+    socket.on('gameStateUpdate', updateGameState)
 
     function drawPlayers(players) {
       // draw players
@@ -15,8 +15,8 @@
         let player = players[playerId]
 
         playerSize = 100 // it's from game.js, but i want to decompose it, so i write it here.
-        ctx.fillStyle = player.colour;
-        ctx.fillRect(player.x/5, player.y/5, playerSize/5, playerSize/5);
+        ctx.fillStyle = player.colour
+        ctx.fillRect(player.x/5, player.y/5, playerSize/5, playerSize/5)
       })
     }
 
@@ -25,7 +25,7 @@
       players = gameState.players
       doubloon = gameState.doubloon
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
       drawPlayers(players)
     }
 
@@ -34,13 +34,13 @@
     // key handling {
       // 这样搞是每次发送一个方向，后台的方向才会改... 而我们需要的，大概是每隔一段时间，服务器向前端获取一个方向。
       if (e.key == "ArrowDown") {
-        socket.emit('down', players);
+        socket.emit('down', players)
       } else if (e.key == "ArrowUp") {
-        socket.emit('up', players);
+        socket.emit('up', players)
       } else if (e.key == "ArrowLeft") {
-        socket.emit('left', players);
+        socket.emit('left', players)
       } else if (e.key == "ArrowRight") {
-        socket.emit('right', players);
+        socket.emit('right', players)
       }
     })
-  })();
+  })()

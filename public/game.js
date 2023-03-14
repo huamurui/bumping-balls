@@ -1,8 +1,8 @@
 var players = {}
 
-const gameSize = 2500; // will be downscaled 5x to 500x500 when we draw
+const gameSize = 2500 // will be downscaled 5x to 500x500 when we draw
 
-const playerSize = 100; // (downscaled to 20x20)
+const playerSize = 100 // (downscaled to 20x20)
 const maxAccel = 10
 
 
@@ -75,16 +75,16 @@ function accelPlayer(id, x, y) {
 
 // thanks SO
 function stringToColour(str) {
-  var hash = 0;
+  var hash = 0
   for (var i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    hash = str.charCodeAt(i) + ((hash << 5) - hash)
   }
-  var colour = '#';
-  for (var i = 0; i < 3; i++) {
-    var value = (hash >> (i * 8)) & 0xFF;
-    colour += ('00' + value.toString(16)).substr(-2);
+  var colour = '#'
+  for (var i = 0 ;i < 3 ;i++) {
+    var value = (hash >> (i * 8)) & 0xFF
+    colour += ('00' + value.toString(16)).substr(-2)
   }
-  return colour;
+  return colour
 }
 
 if (!this.navigator) { // super hacky thing to determine whether this is a node module or inlined via script tag
