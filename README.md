@@ -1,5 +1,3 @@
-# Bumping Balls
+# Socket.io-Game-Demo
 
----
-
-This repo is inspired by [MTrajK/bouncing-balls](https://github.com/MTrajK/bouncing-balls)
+I made a smaller Version of the [Socket.io-Game-Demo](https://github.com/sgoedecke/socket-io-game)
