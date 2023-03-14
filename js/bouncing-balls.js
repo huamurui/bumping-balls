@@ -16,7 +16,6 @@ var localDimensions = {
     height: 100 * (2/3) // the canvas ratio is always 3:2
 }
 
-// 按理说... 这里主要是给渲染用的，但是，碰撞检测好像也用到了...所以很烦。
 
 /******************************************************************************************
 ** PROPERTIES USED FOR COMMUNICATION BETWEEN HELPERS, EVENTS, UPDATE AND PUBLIC FUNCTIONS **
@@ -30,6 +29,9 @@ var updateInterval, balls, ballType, enabledCollisions
 
 function update (){
     if (enabledCollisions){
+
+
+        // https://juejin.cn/post/6844904159938887687
         // check collisions and update positions & velocities
         // O(N^2) but this can be much faster, O(N*LogN) searching in quadtree structure, (or sort the points and check the closest O(N*LogN))        
         for (var i=0 ;i<balls.length; i++)
@@ -37,7 +39,6 @@ function update (){
                 balls[i].collision(balls[j])          
     }
 
-    // https://juejin.cn/post/6844904159938887687
 
     // update ball position & velocity
     balls.forEach((ball) => {
@@ -46,7 +47,6 @@ function update (){
 
     // 当初你为了方便，把用了同一个计时器...这里用户输入... 要emit...可能也差不多。
     // 调参，好玩~
-
     function accelerate(ball, accX, accY, maxV = 1.5) {
       if (ball.velocity.length() < maxV)
       {
@@ -55,7 +55,7 @@ function update (){
       }
     }
 
-    accelerate(balls[0], Joy3.GetX() *0.001, Joy3.GetY() *0.001)
+    accelerate(balls.find((ball) => ball.id == 1), Joy3.GetX() *0.001, Joy3.GetY() *0.001)
 
     render(balls)
 }
@@ -64,23 +64,20 @@ function update (){
 ** PUBLIC FUNCTIONS **
 **********************/
 
-function init(canvasId, dimensionsId, collisions) {
+function init(collisions) {
     // default values
     enabledCollisions = (typeof collisions != 'boolean') ? true : collisions
 
     ballType = Balls.HorizontalBall 
-    //好吧。。。初始化函数也在这里...balls就是维护ball的数组。如果要做多端...持久化储存...下线了怎么办...
     balls = []
 
-    // add a special ball at first place
     var theBall = new ballType(
-      1,
-      '#00ffff',
-      3,
-      new Vector2D(0, 0),
-      new Vector2D(0, 0),
-      // 对的...碰撞检测的时候，是用的这个radius...但是也只用到了这个而已... 这里如果能要交给用户去定义那最好，选择位置和大小，最下边的是什么...
-      localDimensions
+      1, // id
+      '#00ffff', //color
+      3, // radius
+      new Vector2D(0, 0), // init position
+      new Vector2D(0, 0), // init velocity
+      localDimensions  // canvas dimensions
     )
     balls.push(theBall)
 
@@ -92,7 +89,17 @@ function init(canvasId, dimensionsId, collisions) {
       new Vector2D(0, 0),
       localDimensions
     )
+
     balls.push(theBall2)
+    var theBall3 = new ballType(
+      3,
+      '#ff0000',
+      10,
+      new Vector2D(0, 0),
+      new Vector2D(0, 0),
+      localDimensions
+    )
+    balls.push(theBall3)
 
     // set interval
     updateInterval = setInterval(update, intervalMs)
