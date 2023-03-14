@@ -29,6 +29,7 @@ let context = canvas.getContext('2d')
 let canvasDimensions = document.getElementById('dimensions')
 
 let dimensions = getCanvasDimensions(canvasDimensions)
+let scaleRatio = dimensions.scaleRatio
 // ...setCanvasSize... so fucking stupid...
 function setCanvasSize(dimensions) {
   canvas.width = dimensions.width
@@ -37,12 +38,14 @@ function setCanvasSize(dimensions) {
 setCanvasSize(dimensions) 
 
 
+
+
 export function render( balls, theBallProperties) {
   context.clearRect(0, 0, dimensions.width, dimensions.width)
 
   drawCanvasBorder(context, dimensions)
   balls.forEach(function(ball) {
-    drawTheBall(context, ball.position, dimensions.scaleRatio, theBallProperties)
+    drawTheBall(context, ball)
   })
 }
 
@@ -52,14 +55,14 @@ function drawCanvasBorder  (context, dimensions) {
 }
 
 
-function drawTheBall  (context, ballCoords, scaleRatio, theBallProperties){
-  let scaledCoords = ballCoords.mult(scaleRatio); // convert the coordinates in CANVAS size
+function drawTheBall  (context, ball){
+  let scaledCoords = ball.position.mult(scaleRatio); // convert the coordinates in CANVAS size
   context.beginPath()
-  context.arc(scaledCoords.X, scaledCoords.Y, theBallProperties.radius * scaleRatio, // convert the radius too
-      theBallProperties.startAngle, theBallProperties.endAngle)
+  context.arc(scaledCoords.X, scaledCoords.Y, ball.radius * scaleRatio, // convert the radius too
+      0, Math.PI * 2)
   context.closePath()
 
-  context.fillStyle = theBallProperties.color
+  context.fillStyle = ball.color
   context.fill()
 }
 

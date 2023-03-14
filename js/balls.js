@@ -11,11 +11,13 @@ import  Vector2D  from './vector2d.js';
 /**************
  * Ball class *
 ***************/
-function Ball(position, velocity, radius, localDimensions) {
+function Ball(id, color, radius, position, velocity,  localDimensions) {
     // base constructor
+    this.id = id;
+    this.color = color;
+    this.radius = radius;
     this.position = position;
     this.velocity = velocity;
-    this.radius = radius;
     this._borderCoords = {
       // this is for ...边界坐标？？？？
       // 不是，什么意思，是每一个球，都有一个边界坐标？？？
@@ -118,10 +120,10 @@ var horizontalMovementProperties = {
     velocityFactor: 0.2 // velocity factor (converts vector from the mouse dragging to this environment)
 };
 
-function HorizontalBall(position, velocity, radius, localDimensions) {
+function HorizontalBall(id, color, radius ,position, velocity, localDimensions) {
     // HorizontalBall constructor
     // call the base constructor
-    Ball.call(this, position, velocity.mult(horizontalMovementProperties.velocityFactor), radius, localDimensions);
+    Ball.call(this, id, color, radius, position, velocity.mult(horizontalMovementProperties.velocityFactor), localDimensions);
 }
 
 // HorizontalBall inherits from the Ball class
