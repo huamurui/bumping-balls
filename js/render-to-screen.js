@@ -4,25 +4,6 @@ which is the only thing that the client needs to know about
  */
 
 
-
-import myStick from './joy-stick.js'
-
-let theColor = '#00ffff'
-
-var joy3Param = { 
-  title: "joystick3",
-  internalFillColor: theColor,
-  // 目前这个joy stick 还有个问题..主要在移动端，横屏的时候，它全乱套了。
-  internalStrokeColor: "#00aaaa",
-  externalStrokeColor: theColor,
-}
-
-export const Joy3 =  new myStick('joy3Div', joy3Param)
-
-
-
-
-
 // global variables
 let canvas =  document.getElementById('canvas')
 let context = canvas.getContext('2d')
@@ -40,7 +21,7 @@ setCanvasSize(dimensions)
 
 
 
-export function render( balls, theBallProperties) {
+export function render( balls) {
   context.clearRect(0, 0, dimensions.width, dimensions.width)
 
   drawCanvasBorder(context, dimensions)

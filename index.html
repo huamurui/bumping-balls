@@ -23,12 +23,51 @@
       </div>
     </div>
 
+    
+    <dialog id="dialog" style="width: 300px; height: 300px; background-color: #fff; border: 1px solid #000; border-radius: 5px; padding: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
+      <h1>get your ball~</h1>
+      <p>Choose a color for your ball</p>
+      <input type="color" id="color" value="#ff0000">
+      <p>Choose a size for your ball</p>
+      <input type="range" id="size" min="1" max="10" value="2">
+
+      <hr>
+      <button id="ok">ok and start</button>
+      <br><br>
+      <button id="leave">leave</button>
+    </dialog>
+
     <script  type="module" >
-      import BouncingBalls from './js/bouncing-balls.js';
-      // import render from './js/render-to-screen.js';
-      
-      
-      window.onload = BouncingBalls.init(true)
+      import BouncingBalls from './js/bouncing-balls.js'
+      // import myStick from './js/joy-stick.js'
+      // import render from './js/render-to-screen.js'
+      const dialog = document.getElementById('dialog')
+      const ok = document.getElementById('ok')
+
+      const color = document.getElementById('color')
+      const size = document.getElementById('size')
+
+      dialog.showModal()
+      ok.addEventListener('click', () => {
+        dialog.close()
+        let myBall = {
+          color: color.value,
+          radius: parseInt(size.value)
+        }
+        let joy3Param = { 
+          title: "joystick3",
+          internalFillColor: myBall.color,
+          // 目前这个joy stick 还有个问题..主要在移动端，横屏的时候，它全乱套了。
+          internalStrokeColor: "#aaaaaa",
+          externalStrokeColor: myBall.color,
+        }
+
+        BouncingBalls.init(true, myBall, joy3Param);
+      })
+      leave.addEventListener('click', () => {
+        dialog.close()
+        // BouncingBalls.init(true);
+      })
     </script>
 </body>
 

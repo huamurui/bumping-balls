@@ -1,8 +1,8 @@
 import Vector2D from './vector2d.js'
 import Balls from './balls.js'
 
-import { render,Joy3 } from './render-to-screen.js'
-
+import { render } from './render-to-screen.js'
+import myStick from './joy-stick.js'
 
 
 /**************
@@ -20,17 +20,15 @@ var localDimensions = {
 /******************************************************************************************
 ** PROPERTIES USED FOR COMMUNICATION BETWEEN HELPERS, EVENTS, UPDATE AND PUBLIC FUNCTIONS **
 *******************************************************************************************/
-var updateInterval, balls, ballType, enabledCollisions
+var updateInterval, balls, ballType, enabledCollisions, Joy3Param, Joy3
 
 
 /******************
 ** MAIN FUNCTION **
 *******************/
 
-function update (){
+function update (ax = Joy3.GetX() *0.001, ay = Joy3.GetY() *0.001){
     if (enabledCollisions){
-
-
         // https://juejin.cn/post/6844904159938887687
         // check collisions and update positions & velocities
         // O(N^2) but this can be much faster, O(N*LogN) searching in quadtree structure, (or sort the points and check the closest O(N*LogN))        
@@ -55,8 +53,7 @@ function update (){
       }
     }
 
-    accelerate(balls.find((ball) => ball.id == 1), Joy3.GetX() *0.001, Joy3.GetY() *0.001)
-
+    accelerate(balls.find((ball) => ball.id == 1), ax, ay)
     render(balls)
 }
 
@@ -64,15 +61,28 @@ function update (){
 ** PUBLIC FUNCTIONS **
 **********************/
 
-function init(collisions) {
+function init(collisions, myBall, joy3Param ) {
     // default values
     enabledCollisions = (typeof collisions != 'boolean') ? true : collisions
 
     ballType = Balls.HorizontalBall 
     balls = []
+    console.log(myBall)
+
+    Joy3Param = joy3Param
+    Joy3 = new myStick('joy3Div',Joy3Param)
+    let theBall1 = new ballType(
+      1, // id
+      myBall.color, //color
+      myBall.radius, // radius
+      new Vector2D(300, 300), // init position
+      new Vector2D(0, 0), // init velocity
+      localDimensions  // canvas dimensions
+    )
+    balls.push(theBall1)
 
     var theBall = new ballType(
-      1, // id
+      0, // id
       '#00ffff', //color
       3, // radius
       new Vector2D(0, 0), // init position
@@ -91,29 +101,17 @@ function init(collisions) {
     )
 
     balls.push(theBall2)
-    var theBall3 = new ballType(
-      3,
-      '#ff0000',
-      10,
-      new Vector2D(0, 0),
-      new Vector2D(0, 0),
-      localDimensions
-    )
-    balls.push(theBall3)
 
     // set interval
     updateInterval = setInterval(update, intervalMs)
 }
 
 function clear() {
-
     // clear interval
     clearInterval(updateInterval)
-
     // clear canvas
     canvas.width = canvas.height = 0
 }
-
 
 let BouncingBalls = {
     init: init,
