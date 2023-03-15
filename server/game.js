@@ -1,4 +1,4 @@
-let players = {}
+let players = []
 
 const gameSize = 2500 // will be downscaled 5x to 500x500 when we draw
 
@@ -24,9 +24,8 @@ function isValidPosition(newPosition, playerId) {
   let hasCollided = false
 
 
-  Object.keys(players).forEach((key) => {
-    if (key == playerId) { return } // ignore current player in collision check
-    let player = players[key]
+  players.forEach((player) => {
+    if (player.id == playerId) { return } // ignore current player in collision check
     // if the players overlap. hope this works
     if (checkCollision(player, newPosition)) {
       hasCollided = true
@@ -41,8 +40,7 @@ function isValidPosition(newPosition, playerId) {
 }
 
 function movePlayer(id) {
-
-  let player = players[id]
+  let player = players.find((player) => player.id === id)
 
   let newPosition = {
     x: player.x + player.accel.x,
@@ -61,7 +59,7 @@ function movePlayer(id) {
 }
 
 function accelPlayer(id, x, y) {
-  let player = players[id]
+  let player = players.find((player) => player.id === id)
   let currentX = player.accel.x
   let currentY = player.accel.y
 

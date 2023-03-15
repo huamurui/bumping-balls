@@ -17,9 +17,7 @@ function startal () {
   function drawPlayers(players) {
     // draw players
     // the game world is 500x500, but we're downscaling 5x to smooth accel out
-    Object.keys(players).forEach((playerId) => {
-      let player = players[playerId]
-
+    players.forEach((player) => {
       let playerSize = 100 // it's from game.js, but i want to decompose it, so i write it here.
       ctx.fillStyle = player.colour
       ctx.fillRect(player.x/5, player.y/5, playerSize/5, playerSize/5)

@@ -13,8 +13,8 @@ let gameInterval, updateInterval
 
 function gameLoop() {
   // move everyone around
-  Object.keys(engine.players).forEach((playerId) => {
-    engine.movePlayer(playerId)
+  engine.players.forEach((player) => {
+    engine.movePlayer(player.id)
   })
 }
 
@@ -44,7 +44,7 @@ io.on('connection', function(socket){
   socket.on('hello', function(msg){
   })
   // start game if this is the first player
-  if (Object.keys(engine.players).length == 0) {
+  if (engine.players.length == 0) {
 
     // 这个是游戏服务器的主循环，每 25ms 调用一次 gameLoop
   	gameInterval = setInterval(gameLoop, 25)
@@ -61,7 +61,8 @@ io.on('connection', function(socket){
   }
 
   // add player to engine.players obj
-  engine.players[socket.id] = {
+  engine.players.push({
+    id: socket.id,
   	accel: {
   		x: 0,
   		y: 0
@@ -70,14 +71,14 @@ io.on('connection', function(socket){
     y: posY,
   	colour: engine.stringToColour(socket.id),
   	score: 0,
-  }
+  })
 
   // set socket listeners
 
   socket.on('disconnect', function() {
-  	delete engine.players[socket.id]
+    engine.players = engine.players.filter((player) => player.id !== socket.id)
   	// end game if there are no engine.players left
-  	if (Object.keys(engine.players).length > 0) {
+  	if (engine.players.length > 0) {
 
     	io.emit('gameStateUpdate', engine.players);
   	} else {
