@@ -1,30 +1,13 @@
 import express from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
-import engine from './public/game.js'
+import engine from './server/game.js'
 
 let app = express()
 let server = http.createServer(app)
 let io = new Server(server)
 
 let gameInterval, updateInterval
-
-function pirateName() {
-  let names = [
-    'Blackbeard',
-    'Jimmy',
-    'Roger',
-    'Carlos',
-    'Juanita',
-    'Sophie',
-    'Boris',
-    'Jenny',
-    'Doris',
-    'Philippe',
-    'Jack'
-  ]
-  return names[Math.floor(Math.random()*names.length)]
-}
 
 // TODO: extract below
 
@@ -41,7 +24,7 @@ function gameLoop() {
 
 // serve css and js
 
-app.use(express.static('public'))
+app.use(express.static('client'))
 
 app.get('/', function(req, res){
   //https://stackoverflow.com/questions/8817423/why-is-dirname-not-defined-in-node-repl
@@ -87,7 +70,6 @@ io.on('connection', function(socket){
     y: posY,
   	colour: engine.stringToColour(socket.id),
   	score: 0,
-    name: pirateName()
   }
 
   // set socket listeners
