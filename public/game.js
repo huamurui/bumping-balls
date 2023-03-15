@@ -1,4 +1,4 @@
-var players = {}
+let players = {}
 
 const gameSize = 2500 // will be downscaled 5x to 500x500 when we draw
 
@@ -21,12 +21,12 @@ function isValidPosition(newPosition, playerId) {
     return false
   }
   // collision check
-  var hasCollided = false
+  let hasCollided = false
 
 
   Object.keys(players).forEach((key) => {
     if (key == playerId) { return } // ignore current player in collision check
-    player = players[key]
+    let player = players[key]
     // if the players overlap. hope this works
     if (checkCollision(player, newPosition)) {
       hasCollided = true
@@ -42,9 +42,9 @@ function isValidPosition(newPosition, playerId) {
 
 function movePlayer(id) {
 
-  var player = players[id]
+  let player = players[id]
 
-  var newPosition = {
+  let newPosition = {
     x: player.x + player.accel.x,
     y: player.y + player.accel.y
   }
@@ -61,9 +61,9 @@ function movePlayer(id) {
 }
 
 function accelPlayer(id, x, y) {
-  var player = players[id]
-  var currentX = player.accel.x
-  var currentY = player.accel.y
+  let player = players[id]
+  let currentX = player.accel.x
+  let currentY = player.accel.y
 
   if (Math.abs(currentX + x) < maxAccel) {
     player.accel.x += x
@@ -75,25 +75,23 @@ function accelPlayer(id, x, y) {
 
 // thanks SO
 function stringToColour(str) {
-  var hash = 0
-  for (var i = 0; i < str.length; i++) {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash)
   }
-  var colour = '#'
-  for (var i = 0 ;i < 3 ;i++) {
-    var value = (hash >> (i * 8)) & 0xFF
+  let colour = '#'
+  for (let i = 0 ;i < 3 ;i++) {
+    let value = (hash >> (i * 8)) & 0xFF
     colour += ('00' + value.toString(16)).substr(-2)
   }
   return colour
 }
 
-if (!this.navigator) { // super hacky thing to determine whether this is a node module or inlined via script tag
-  module.exports = {
-    players: players,
-    stringToColour: stringToColour,
-    accelPlayer: accelPlayer,
-    movePlayer: movePlayer,
-    gameSize: gameSize,
-    isValidPosition: isValidPosition,
-  }
+export default {
+  players,
+  stringToColour,
+  accelPlayer,
+  movePlayer,
+  gameSize,
+  isValidPosition,
 }

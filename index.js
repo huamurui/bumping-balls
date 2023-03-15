@@ -1,13 +1,16 @@
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var engine = require('./public/game')
+import express from 'express'
+import http from 'http'
+import { Server } from 'socket.io'
+import engine from './public/game.js'
 
-var gameInterval, updateInterval
+let app = express()
+let server = http.createServer(app)
+let io = new Server(server)
+
+let gameInterval, updateInterval
 
 function pirateName() {
-  var names = [
+  let names = [
     'Blackbeard',
     'Jimmy',
     'Roger',
@@ -37,10 +40,12 @@ function gameLoop() {
 // ----------------------------------------
 
 // serve css and js
+
 app.use(express.static('public'))
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  //https://stackoverflow.com/questions/8817423/why-is-dirname-not-defined-in-node-repl
+  res.sendFile(process.cwd() + '/index.html');
 });
 
 
@@ -52,9 +57,8 @@ function emitUpdates() {
 }
 
 io.on('connection', function(socket){
-  console.log('User connected: ', socket.id)
+  console.log('User connected: ', socket.id, socket.handshake.query)
   socket.on('hello', function(msg){
-    console.log(msg)
   })
   // start game if this is the first player
   if (Object.keys(engine.players).length == 0) {
@@ -66,8 +70,8 @@ io.on('connection', function(socket){
 	}
 
   // get open position
-  var posX = 0
-  var posY = 0
+  let posX = 0
+  let posY = 0
   while (!engine.isValidPosition({ x: posX, y: posY }, socket.id)) {
     posX = Math.floor(Math.random() * Number(engine.gameSize) - 100) + 10
     posY = Math.floor(Math.random() * Number(engine.gameSize) - 100) + 10
@@ -106,6 +110,6 @@ io.on('connection', function(socket){
   })
 });
 
-http.listen(process.env.PORT || 8081, function(){
+server.listen(process.env.PORT || 8081, function(){
   console.log('listening on *:8081', process.env.PORT);
 });

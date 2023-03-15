@@ -1,8 +1,12 @@
   (function () {
-    var socket = io()
-    var canvas = document.getElementById('game')
-    var ctx = canvas.getContext('2d')
-    // var players = {} // this is magically defined in game.js
+    let socket = io({
+      query: {
+        name: 'konodioda'
+      }
+    })
+    let canvas = document.getElementById('game')
+    let ctx = canvas.getContext('2d')
+    // let players = {} // this is magically defined in game.js
     // 虽说 websocket 是对称的...但这样看，估计，啊...不知道怎么讲了。
 
     // 这里，可以看到，是后端调用的整个前端更新。
