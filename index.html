@@ -1,32 +1,22 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
-<head>
-    <title>Bouncing Balls</title>
-    <link rel="stylesheet" type="text/css" href="css/styles.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-
 <body>
-  
-    <div>use mouse click and drag to create little balls, and use ASWD or ↑↓←→ to move the cyan ball</div>
-    <div id="simulation" style="display:block">
-        <!-- Only these 2 elements are used in the simulation "dimensions" and "canvas" -->
-        <div id="dimensions">
-            <canvas id="canvas"></canvas>
-        </div>
-    </div>
+    <script>
+        const ws = new WebSocket("ws://localhost:8080");
 
-  
-    <!-- Example of FIXED or ABSOLUTE position -->
-		<div id="joy3Div" style="width:200px;height:200px;margin:50px;position:fixed;bottom:0px;right:0px;"></div>
-      <div style="position:fixed;bottom:125px;left:750px;">
+        ws.onopen = function () {
+            ws.send("发送数据");
+            setTimeout(() => {
+                ws.send("发送数据2");
+            }, 3000)
+        };
 
-      </div>
-    </div>
+        ws.onmessage = function (evt) {
+            console.log("evt",evt)
+        };
 
-    <script  type="module" >
-      import BouncingBalls from './js/bouncing-balls.js';
-      window.onload = BouncingBalls.init('canvas', 'dimensions',true, true)
+        ws.onclose = function (evt) {
+        };
     </script>
 </body>
 
