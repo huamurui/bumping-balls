@@ -48,11 +48,14 @@ app.get('/', function(req, res){
 function emitUpdates() {
   // tell everyone what's up
   // emit 的时候把游戏所有人的状态发给所有人
-  io.emit('gameStateUpdate', { players: engine.players, doubloon: engine.doubloon });
+  io.emit('gameStateUpdate', { players: engine.players});
 }
 
 io.on('connection', function(socket){
   console.log('User connected: ', socket.id)
+  socket.on('hello', function(msg){
+    console.log(msg)
+  })
   // start game if this is the first player
   if (Object.keys(engine.players).length == 0) {
 
@@ -97,21 +100,9 @@ io.on('connection', function(socket){
   	}
   })
 
-  // 这里可能也是苦恼的一部分... 或者，...分那个啥，前端还是也个计时器好了，每个人每隔 40ms 发一次数据到服务器，而不是键盘按键发送事件。
-  socket.on('up', function(msg){
-    engine.accelPlayer(socket.id, 0, -1)
-  });
-
-  socket.on('down', function(msg) {
-    engine.accelPlayer(socket.id, 0, 1)
-  })
-
-  socket.on('left', function(msg){
-    engine.accelPlayer(socket.id, -1, 0)
-  });
-
-  socket.on('right', function(msg) {
-    engine.accelPlayer(socket.id, 1, 0)
+  socket.on('accel', function(msg) {
+    // console.log('accel', msg)
+    engine.accelPlayer(socket.id, msg.x, msg.y)
   })
 });
 

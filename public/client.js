@@ -6,6 +6,8 @@
     // 虽说 websocket 是对称的...但这样看，估计，啊...不知道怎么讲了。
 
     // 这里，可以看到，是后端调用的整个前端更新。
+    socket.emit("hello", Math.random())
+      
     socket.on('gameStateUpdate', updateGameState)
 
     function drawPlayers(players) {
@@ -34,13 +36,13 @@
     // key handling {
       // 这样搞是每次发送一个方向，后台的方向才会改... 而我们需要的，大概是每隔一段时间，服务器向前端获取一个方向。
       if (e.key == "ArrowDown") {
-        socket.emit('down', players)
+        socket.emit('accel', {x: 0, y: 1})
       } else if (e.key == "ArrowUp") {
-        socket.emit('up', players)
+        socket.emit('accel', {x: 0, y: -1})
       } else if (e.key == "ArrowLeft") {
-        socket.emit('left', players)
+        socket.emit('accel', {x: -1, y: 0})
       } else if (e.key == "ArrowRight") {
-        socket.emit('right', players)
+        socket.emit('accel', {x: 1, y: 0})
       }
     })
   })()
