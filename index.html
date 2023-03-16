@@ -1,25 +1,107 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>Pirates!</title>
-    <link rel="stylesheet" href='./styles.css'>
-    <meta charset="utf-8">
+<head>
+    <title>Bumping Balls</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body>
-    <div id='header'>Pirates!</div>
-    <div class='sidebar'>
-      <div id='playerCount'></div>
-      <div id='scores'></div>
+    <style>
+      @media only screen and (max-width: 480px) {
+        #dimensions {
+          margin: 50px auto 0;
+          width: 300px;
+          height: 200px;
+        }
+      }
+
+      @media only screen and (min-width: 481px) and (max-width: 630px) {
+        #dimensions {
+          margin: 50px auto 0;
+          width: 400px;
+          height: 266px;
+        }
+      }
+
+      @media only screen and (min-width: 631px) and (max-width: 1500px) {
+        #dimensions {
+          margin: 75px auto 0;
+          width: 600px;
+          height: 399px;
+        }
+      }
+
+      @media only screen and (min-width: 1501px) {
+        #dimensions {
+          margin: 100px auto 0;
+          width: 900px;
+          height: 600px;
+        }
+      }
+
+      #canvas:active {
+        cursor: -webkit-grab;
+        cursor: grab;
+      }
+
+      #simulation {
+        display: none;
+      }
+
+      #choices,
+      #simulation {
+        text-align: center;
+      }
+
+    </style>
+</head>
+
+<body>
+  
+    <div id="simulation" style="display:block">
+        <!-- Only these 2 elements are used in the simulation "dimensions" and "canvas" -->
+        <div id="dimensions">
+            <canvas id="canvas"></canvas>
+        </div>
     </div>
-    <canvas id="game" width="500" height="500"></canvas>
 
+  
+    <!-- Example of FIXED or ABSOLUTE position -->
+		<div id="myBallStick" style="width:150px;height:150px;margin:50px;position:fixed;bottom:0px;right:0px;"></div>
+      <div style="position:fixed;bottom:125px;left:750px;">
 
+      </div>
+    </div>
+
+    
+    <dialog id="dialog" style="width: 300px; height: 300px; background-color: #fff; border: 1px solid #000; border-radius: 5px; padding: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
+      <h1>get your ball~</h1>
+      <p>Choose a color for your ball</p>
+      <input type="color" id="color" value="#ff0000">
+      <p>Choose a size for your ball</p>
+      <input type="range" id="size" min="1" max="10" value="2">
+
+      <hr>
+      <button id="ok">ok and start</button>
+      <br><br>
+      <button id="leave">leave</button>
+    </dialog>
     <script src="/socket.io/socket.io.js"></script>
-    <script type="module" src="/client.js"></script>
-    <script type="module">
-      import startal from './client.js';
-      startal()
+    <script type="module" >
+      // import start from './client/index.js'
+      import start from './index.js'
+      dialog.showModal()
+      ok.addEventListener('click', () => {
+        dialog.close()
+        let myBall = {
+          color: color.value,
+          radius: parseInt(size.value)
+        }
+        start(myBall, dimensions, canvas)
+        // BouncingBalls.init(true, myBall, joy3Param)
+      })
+      leave.addEventListener('click', () => {
+        dialog.close()
+        // BouncingBalls.init(true);
+      })
     </script>
-  </body>
+</body>
+
 </html>
