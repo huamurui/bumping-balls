@@ -1,5 +1,17 @@
-# Socket.io-Game-Demo
+# nodejs pm2 docker socket.io
 
-I made a smaller Version of the [Socket.io-Game-Demo](https://github.com/sgoedecke/socket-io-game), which is stored here [MyDemo](https://github.com/huamurui/bumping-balls/tree/socket_io-game-demo). And then, I refactored the [bouncing-balls](https://github.com/MTrajK/bouncing-balls), place it in this repo now you are reading.
+[https://cloud.tencent.com/developer/article/1061889]
 
-There are lots of things through the process, I will write them down if have time.
+[https://github.com/elad/node-cluster-socket.io]
+
+[https://socket.io/zh-CN/docs/v4/pm2/]
+
+[https://socket.io/zh-CN/docs/v4/adapter/]
+
+[https://medium.com/@atakan.reyhanioglu/cluster-communication-9065f2cb4de4]
+
+[https://github.com/atakanreyhanioglu/pm2-w-docker]
+
+单独的 pm2 或者单独的 docker，或者 docker 里用 pm2 的 pm2 官方也给了个镜像。
+但是 socketio 和 pm2 就已经有点那啥。三个一起上...就有点...神经病了。
+但确实也是需要的...对吧

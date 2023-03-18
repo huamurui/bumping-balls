@@ -3,10 +3,16 @@ import http from 'http'
 import { Server } from 'socket.io'
 import engine, { balls } from './server/index.js'
 
+import redisAdapter from 'socket.io-redis'
+
 let app = express()
 let server = http.createServer(app)
 let io = new Server(server)
 
+io.adapter(redisAdapter({
+    host: 'redis',
+    port: 6379
+}))
 // ----------------------------------------
 // Main server code
 // ----------------------------------------

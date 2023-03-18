@@ -15,7 +15,8 @@ function start(myBall, dimensions, canvas) {
     query: {
       color: myBall.color,
       radius: myBall.radius,
-    }
+    },
+    transports: [ "websocket" ]
   })
 
   socket.emit("hello", Math.random())
